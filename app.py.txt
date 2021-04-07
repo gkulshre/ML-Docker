@@ -1,0 +1,55 @@
+
+from flask import Flask, request
+import numpy as np
+import pickle
+import pandas as pd
+import flasgger
+from flasgger import Swagger
+
+app=Flask(__name__)
+Swagger(app)
+
+pickle_in = open("model.pkl","rb")
+model=pickle.load(pickle_in)
+
+@app.route('/')
+def welcome():
+    return "Welcome All"
+
+@app.route('/predict',methods=["Get"])
+def predict_note_authentication():
+    
+    """Let's Build Machine learning application.
+    ---
+    parameters:  
+      - name: sepal_length
+        in: query
+        type: float
+        required: false
+      - name: sepal_width
+        in: query
+        type: float
+        required: false
+      - name: petal_length
+        in: query
+        type: float
+        required: false
+      - name: petal_width
+        in: query
+        type: float
+        required: false
+    responses:
+        200:
+            description: The output values
+        
+    """
+    sepal_length=request.args.get("sepal_length")
+    sepal_width=request.args.get("sepal_width")
+    petal_length=request.args.get("petal_length")
+    petal_width=request.args.get("petal_width")
+    prediction=model.predict([[sepal_length,sepal_width,petal_length,petal_width]])
+    print(prediction)
+    return "Hello The answer is"+ str(prediction)
+
+if __name__=='__main__':
+    app.run(host='127.0.0.1',port=8000)
